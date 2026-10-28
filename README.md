@@ -12,7 +12,7 @@ A terminal-based AI chatbot built in Python, designed to grow into a fully featu
 
 The following features are planned and will be added progressively:
 
-- [ ] Stateful conversation history within a session
+- [x] Stateful conversation history within a session
 - [ ] Persistent conversation history (save/load sessions)
 - [ ] Support for additional LLM providers
 - [ ] Mid-conversation model switching

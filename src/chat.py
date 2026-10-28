@@ -7,15 +7,20 @@ load_dotenv()
 # API Authentication
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def chat(prompt):
+SYSTEM_PROMPT = {"role": "system", "content": "You are a helpful AI assistant"}
+
+conversation_history = []
+
+def chat(user_input, history):
+    history.append({"role": "user", "content": user_input})
+
     response = client.chat.completions.create(
         model="gpt-5.4-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful AI assistant"},
-            {"role": "user", "content": prompt}
-        ]
+        messages=[SYSTEM_PROMPT] + history
     )
-    return response.choices[0].message.content
+    assistant_message = response.choices[0].message.content
+    history.append({"role": "assistant", "content": assistant_message})
+    return assistant_message, history
 
 if __name__ == "__main__":
     while True:
@@ -24,6 +29,6 @@ if __name__ == "__main__":
             print("Goodbye!")
             break
 
-        response = chat(user_input)
+        response, conversation_history = chat(user_input, conversation_history)
 
         print("Chatbot: ", response)
