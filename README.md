@@ -7,15 +7,24 @@ A terminal-based AI chatbot built in Python, designed to grow into a fully featu
 - Conversational interface via the terminal
 - OpenAI GPT model integration
 - Secure API key management via `.env`
+- Stateful conversation history: the model remembers the whole conversation
+- Persistent conversations: saved automatically after every reply and resumable later
+- Crash-safe saving using atomic writes, so a conversation file is never left half-written
+- Startup menu listing conversations by title, last modified date and message count
+- Custom conversation titles, or an automatically generated title if left blank
+- Recap of the most recent exchanges when resuming a conversation
+- Graceful handling of API errors and Ctrl+C
 
 ## Roadmap
 
 The following features are planned and will be added progressively:
 
 - [x] Stateful conversation history within a session
-- [ ] Persistent conversation history (save/load sessions)
-- [ ] Support for additional LLM providers
-- [ ] Mid-conversation model switching
+- [x] Persistent conversation history (save/load sessions)
+- [ ] In-chat commands: `/history`, `/rename`, `/model`, `/help`
+- [ ] Mid-conversation model switching, with each reply labelled by model
+- [ ] Support for additional LLM providers (Groq, Ollama)
+- [ ] Pre-flight token and cost estimation
 
 ## Tech Stack
 
@@ -42,9 +51,8 @@ cd AI-chatbot
 
 ### 2. Create a virtual environment
 
-```bash
-python -m venv .venv
-```
+- **Windows:** `python -m venv .venv`
+- **macOS/Linux:** `python3 -m venv .venv`
 
 Activate it:
 
@@ -75,19 +83,31 @@ OPENAI_API_KEY="sk-xxx"
 python src/chat.py
 ```
 
-Type your message and press Enter to chat. Type `quit`, `exit`, or `bye` to end the session.
+### 6. Using the chatbot
+
+On startup, choose a saved conversation by number or press `N` to start a new one.
+New conversations ask for a title (leave it blank to have one generated after the first reply).
+
+Type your message and press Enter to chat.
+
+Conversations save automatically after every reply. Type `quit`, `exit` or `bye`
+to leave, or press Ctrl+C. Nothing is lost upon exit.
+
+Conversations are stored locally in the `conversations/` folder. Messages are sent to the model provider (currently OpenAI) to generate replies.
 
 ## Project Structure
 
 ```
 AI-chatbot/
-├── .env
+├── .env                      # API keys (never committed)
 ├── .gitignore
 ├── requirements.txt
 ├── README.md
 ├── LICENSE
+├── conversations/            # saved conversations (created automatically)
 └── src/
-    └── chat.py
+    ├── chat.py               # terminal interface and chat loop
+    └── storage.py            # saving, loading, and listing conversations
 ```
 
 > The `src/` directory will expand as new providers, memory modules, and integrations are added.
